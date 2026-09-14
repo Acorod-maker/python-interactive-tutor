@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python 冒險者新手村 ‧ 零基礎互動式 Python 學習教材</title>
+  <meta name="description" content="專為零程式基礎打造的互動式 Python 學習平台，瀏覽器免安裝直接執行，圖解生活化觀念、闖關實戰、智慧檢驗與即時反饋！">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Pyodide WebAssembly Python Runtime -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-theme">
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <span class="logo-icon">🐍</span>
+        <div class="logo-text">
+          <span class="logo-title">Python 奇幻冒險 Quest</span>
+          <span class="logo-subtitle">零基礎互動式程式教學平台</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-center">
+      <div class="progress-bar-container" title="整體學習進度">
+        <div class="progress-info">
+          <span id="progress-text">進度：0 / 24 關卡 (0%)</span>
+          <span id="badge-count">🏆 0 徽章</span>
+        </div>
+        <div class="progress-track">
+          <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button id="btn-cheatsheet" class="nav-btn" title="查看 Python 語法速查表">
+        <span class="icon">📖</span> 語法小抄
+      </button>
+      <button id="btn-sandbox" class="nav-btn" title="自由無拘束的 Python 演練沙盒">
+        <span class="icon">🧪</span> 自由沙盒
+      </button>
+      <button id="btn-sound" class="nav-btn icon-only" title="切換音效">
+        <span class="icon">🔊</span>
+      </button>
+      <button id="btn-theme" class="nav-btn icon-only" title="切換深色/淺色主題">
+        <span class="icon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Application Workspace -->
+  <main class="main-container">
+    <!-- Left Sidebar: Chapter & Level Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>課程關卡地圖</h2>
+        <span class="level-indicator" id="current-chapter-indicator">Ch 1</span>
+      </div>
+      <div class="chapters-list" id="chapters-list">
+        <!-- Dynamically populated chapters & lessons -->
+      </div>
+      <div class="sidebar-footer">
+        <button id="btn-reset-progress" class="text-btn">重置學習進度</button>
+      </div>
+    </aside>
+
+    <!-- Center Panel: Theory, Story & Mission Guidelines -->
+    <section class="lesson-panel" id="lesson-panel">
+      <div class="lesson-header">
+        <div class="lesson-breadcrumb">
+          <span id="bc-chapter">章節 1</span> ❯ <span id="bc-lesson">第 1 關</span>
+        </div>
+        <h1 class="lesson-title" id="lesson-title">載入中...</h1>
+        
+        <!-- Tabs -->
+        <div class="tabs-nav">
+          <button class="tab-btn active" data-tab="tab-theory" id="tab-btn-theory">
+            <span class="icon">📖</span> 觀念探索
+          </button>
+          <button class="tab-btn" data-tab="tab-mission" id="tab-btn-mission">
+            <span class="icon">🎯</span> 闖關實戰
+            <span class="tab-badge" id="mission-status-badge">未完成</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-quiz" id="tab-btn-quiz">
+            <span class="icon">❓</span> 觀念小測
+          </button>
+        </div>
+      </div>
+
+      <div class="lesson-content-body">
+        <!-- Tab 1: Theory & Concept -->
+        <div class="tab-pane active" id="tab-theory">
+          <div class="theory-wrapper" id="theory-content">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Mission & Requirements -->
+        <div class="tab-pane" id="tab-mission">
+          <div class="mission-card" id="mission-card">
+            <div class="mission-badge-header">
+              <span class="mission-tag">當前任務目標</span>
+              <span class="reward-points">⭐ +100 經驗值</span>
+            </div>
+            <h3 id="mission-goal" class="mission-goal"></h3>
+            <div id="mission-description" class="mission-description"></div>
+            
+            <div class="mission-specs">
+              <h4>📋 驗證要求：</h4>
+              <ul id="mission-requirements"></ul>
+            </div>
+
+            <!-- Hint Box -->
+            <div class="hint-section" id="hint-section">
+              <div class="hint-controls">
+                <button id="btn-get-hint" class="btn-hint">
+                  💡 取得提示 <span id="hint-counter">(0/3)</span>
+                </button>
+                <button id="btn-show-solution" class="btn-solution">
+                  🔓 查看參考解答
+                </button>
+              </div>
+              <div id="hint-box" class="hint-box hidden"></div>
+              <div id="solution-box" class="solution-box hidden"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Interactive Quiz -->
+        <div class="tab-pane" id="tab-quiz">
+          <div class="quiz-container" id="quiz-container">
+            <!-- Dynamically populated quiz questions -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Panel: Code Editor & Execution Console -->
+    <section class="code-panel">
+      <!-- Editor Header -->
+      <div class="editor-header">
+        <div class="file-tab">
+          <span class="python-icon">🐍</span>
+          <span class="file-name" id="file-name">solution.py</span>
+          <span class="unsaved-dot hidden" id="unsaved-dot">●</span>
+        </div>
+        
+        <div class="editor-actions">
+          <button id="btn-format-code" class="icon-tool-btn" title="整理縮排">🧹 格式整理</button>
+          <button id="btn-reset-code" class="icon-tool-btn" title="重置為初始代碼">🔄 重置代碼</button>
+        </div>
+      </div>
+
+      <!-- Code Editor Workspace -->
+      <div class="editor-wrapper">
+        <div class="line-numbers" id="line-numbers">1</div>
+        <textarea id="code-editor" class="code-textarea" spellcheck="false" placeholder="在此處輸入你的 Python 程式碼..."></textarea>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="action-bar">
+        <div class="engine-status" id="engine-status">
+          <span class="status-indicator loading"></span>
+          <span id="status-text">Pyodide 引擎載入中...</span>
+        </div>
+        
+        <div class="run-buttons">
+          <button id="btn-run-code" class="btn btn-secondary" title="快捷鍵: Ctrl + Enter">
+            <span class="btn-icon">▶</span> 執行程式碼
+          </button>
+          <button id="btn-verify-mission" class="btn btn-primary">
+            <span class="btn-icon">🚀</span> 送出驗證挑戰
+          </button>
+        </div>
+      </div>
+
+      <!-- Console & Results Output -->
+      <div class="console-panel">
+        <div class="console-header">
+          <div class="console-tabs">
+            <button class="console-tab-btn active" data-console-tab="stdout-view" id="tab-stdout">
+              📺 終端機輸出 (Console)
+            </button>
+            <button class="console-tab-btn" data-console-tab="test-view" id="tab-test-results">
+              🧪 測試報告 <span id="test-badge" class="test-badge-pill hidden">0/0</span>
+            </button>
+          </div>
+          <div class="console-tools">
+            <button id="btn-clear-console" class="text-tool-btn">清除輸出</button>
+          </div>
+        </div>
+
+        <div class="console-body">
+          <!-- Stdout / Stderr View -->
+          <div id="stdout-view" class="console-view active">
+            <pre id="console-output" class="console-output"><span class="system-msg">歡迎來到 Python 奇幻冒險！點擊「執行程式碼」即可即時在瀏覽器中運行 Python。</span></pre>
+          </div>
+
+          <!-- Test Results View -->
+          <div id="test-view" class="console-view">
+            <div id="test-results-list" class="test-results-list">
+              <div class="test-empty-state">尚未送出測試。完成任務目標後，點擊「🚀 送出驗證挑戰」！</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Victory / Level Complete Modal -->
+  <div id="victory-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="victory-header">
+        <div class="trophy-icon">🎉</div>
+        <h2>恭喜通關！</h2>
+        <p id="victory-lesson-name">第一關：Hello, Python!</p>
+      </div>
+      <div class="victory-stats">
+        <div class="stat-item">
+          <span class="stat-label">獲得經驗</span>
+          <span class="stat-val">+100 XP</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">掌握技能</span>
+          <span class="stat-val" id="victory-skill-tag">print 輸出</span>
+        </div>
+      </div>
+      <div class="victory-comment" id="victory-comment">
+        「你已經邁出了成為 Python 大師的第一步！」
+      </div>
+      <div class="victory-actions">
+        <button id="btn-modal-stay" class="btn btn-secondary">留在本關查看</button>
+        <button id="btn-modal-next" class="btn btn-primary">進入下一關 ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Python Cheat Sheet Modal -->
+  <div id="cheatsheet-modal" class="modal-backdrop hidden">
+    <div class="modal-card large-modal">
+      <div class="modal-top">
+        <h2>📖 Python 語法速查隨身手冊</h2>
+        <button id="btn-close-cheatsheet" class="close-btn">&times;</button>
+      </div>
+      <div class="cheatsheet-grid" id="cheatsheet-content">
+        <!-- Dynamically rendered cheat cards -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Sandbox Mode Banner -->
+  <div id="sandbox-banner" class="sandbox-banner hidden">
+    <span>🧪 <strong>自由沙盒模式</strong>：此時你可以自由撰寫任意 Python 代碼，盡情實驗無拘束！</span>
+    <button id="btn-exit-sandbox" class="btn btn-xs">返回闖關模式</button>
+  </div>
+
+  <!-- Application Scripts -->
+  <script type="module" src="js/sound-effects.js"></script>
+  <script type="module" src="js/pyodide-runner.js"></script>
+  <script type="module" src="js/curriculum.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
